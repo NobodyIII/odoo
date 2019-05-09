@@ -77,6 +77,10 @@ class ProjectTask(models.Model):
 
     @api.multi
     def write(self, values):
+        # prevent infinite loop when writing to child_ids
+        if not self:
+            return False
+
         # sub task has the same so line than their parent
         if 'parent_id' in values:
             values['sale_line_id'] = self.env['project.task'].browse(values['parent_id']).sudo().sale_line_id.id
@@ -86,7 +90,7 @@ class ProjectTask(models.Model):
         if 'sale_line_id' in values:
             # subtasks should have the same SO line than their mother
             self.sudo().mapped('child_ids').write({
-                'so_line': values['sale_line_id']
+                'sale_line_id': values['sale_line_id']
             })
             self.sudo().mapped('timesheet_ids').write({
                 'so_line': values['sale_line_id']
