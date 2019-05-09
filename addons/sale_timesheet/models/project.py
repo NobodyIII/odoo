@@ -86,7 +86,7 @@ class ProjectTask(models.Model):
         if 'sale_line_id' in values:
             # subtasks should have the same SO line than their mother
             self.sudo().mapped('child_ids').write({
-                'so_line': values['sale_line_id']
+                'sale_line_id': values['sale_line_id']
             })
             self.sudo().mapped('timesheet_ids').write({
                 'so_line': values['sale_line_id']
